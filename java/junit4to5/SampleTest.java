@@ -4,42 +4,44 @@
 package co.gitar;
 
 import static java.util.Arrays.asList;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
-              
-@RunWith(MockitoJUnitRunner.class)
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+@ExtendWith(MockitoExtension.class)
 public class SampleTest extends BaseTest {
-  @BeforeClass
+  @BeforeAll
   public static void setup() {
     // ...
   }
 
-  @Before
+  @BeforeEach
   public void reset() {
     // ...
   }
 
   @Test
   public void test1() {
-    Assert.assertThat(asList("c", "a", "b"), containsInAnyOrder("a", "b", "c"));
+    assertThat(asList("c", "a", "b"), containsInAnyOrder("a", "b", "c"));
   }
 
   @Test
-  @Ignore
+  @Disabled
   public void test2() {
     String[] a1 = new String[] {"c", "a", "b"};
     String[] a2 = new String[3];
     a2[0] = "a";
     a2[1] = "b";
     a2[2] = "c";
-    Assert.assertEquals(a1[0], "c");
-    Assert.assertEquals(a1, a2);
+    assertThat(a1[0], equalTo("c"));
+    assertArrayEquals(a1, a2);
   }
 }
