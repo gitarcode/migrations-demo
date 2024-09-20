@@ -1,7 +1,5 @@
 package co.gitar
 
-import co.gitar.Streams
-import io.reactivex.rxjava3.core.Observable
 import kotlin.test.Test
 import org.junit.jupiter.api.Assertions.assertEquals
 
@@ -9,47 +7,52 @@ class Test {
 
     @Test
     fun testSimple() {
-        val observable = Observable.just("Hello World")
+        val observable = flowOf("Hello World")
         val res = mutableListOf<String>()
-        observable.subscribe { res += it }
+        runBlocking { observable.collect { res += it } }
         assertEquals(listOf("Hello World"), res)
     }
 
     @Test
     fun testMBasic() {
-        Streams.stream1().map { it.first().code }
-            .filter { it > 98 }
-            .take(3)
-            .subscribe { println(it) }
+        runBlocking {
+            Streams.stream1()
+                .map { it.first().code }
+                .filter { it > 98 }
+                .take(3)
+                .collect { println(it) }
+        }
     }
 
     @Test
     fun testZipWith() {
         val res = mutableListOf<String>()
-        Streams.stream1().zipWith(Streams.stream2(), Streams::concat).subscribe { res += it }
+        runBlocking {
+            Streams.stream1().zip(Streams.stream2(), Streams::concat).collect { res += it }
+        }
         assertEquals(listOf("ax", "by", "cz"), res)
     }
 
     @Test
     fun testStartWith() {
         val res = mutableListOf<String>()
-        Streams.stream1()
-            .startWith(Streams.stream2())
-            .subscribe { res += it }
+        runBlocking {
+            Streams.stream1().onStart { emitAll(Streams.stream2()) }.collect { res += it }
+        }
         assertEquals(listOf("x", "y", "z", "a", "b", "c", "d", "e", "f"), res)
     }
 
     @Test
     fun testMergeWith() {
         val res = mutableListOf<String>()
-        Streams.stream1().mergeWith(Streams.stream2()).subscribe { res += it }
+        runBlocking { merge(Streams.stream1(), Streams.stream2()).collect { res += it } }
         assertEquals(listOf("a", "b", "c", "d", "e", "f", "x", "y", "z"), res)
     }
 
     @Test
     fun testFlatMap() {
         val res = mutableListOf<String>()
-        Streams.stream1().flatMap { Streams.stream2() }.subscribe { res += it }
+        runBlocking { Streams.stream1().flatMapConcat { Streams.stream2() }.collect { res += it } }
         assertEquals(
             listOf(
                 "x",
