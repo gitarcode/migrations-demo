@@ -1,19 +1,19 @@
 package co.gitar
 
-import io.reactivex.rxjava3.core.Observable
-
 object Streams {
-    fun stream1(): Observable<String> {
-        return Observable.just("a", "b", "c", "d", "e", "f")
+    fun stream1(): Flow<String> {
+        return flowOf("a", "b", "c", "d", "e", "f")
     }
 
-    fun stream2(): Observable<String> {
-        return Observable.fromIterable(listOf("x", "y", "z"))
+    fun stream2(): Flow<String> {
+        return flowOf("x", "y", "z")
     }
 
-    fun stream3(): Observable<String> {
-        return Observable.fromCallable { call() }
-            .delay(10, TimeUnit.MILLISECONDS)
+    fun stream3(): Flow<String> {
+        return flow {
+            delay(10)
+            emit(call())
+        }
     }
 
     private fun call(): String {
